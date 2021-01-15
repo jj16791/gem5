@@ -67,6 +67,24 @@ def config_cache(options, system):
             core.O3_ARM_v7a_DCache, core.O3_ARM_v7a_ICache, \
             core.O3_ARM_v7aL2, \
             core.O3_ARM_v7aWalkCache
+    elif options.cpu_type == "O3_ARM_TX2_3":
+        try:
+            import cores.arm.O3_ARM_TX2 as core
+        except:
+            print("O3_ARM_TX2_3 is unavailable. Did you compile the O3 model?")
+            sys.exit(1)
+
+        dcache_class, icache_class, l2_cache_class, walk_cache_class = \
+            core.O3_ARM_TX2_DCache, core.O3_ARM_TX2_ICache, None, None
+    elif options.cpu_type == "O3_ARM_riken_3":
+        try:
+            from cores.arm.O3_ARM_riken import *
+        except:
+            print("O3_ARM_riken_3 is unavailable."
+                  "Did you compile the O3 model?")
+            sys.exit(1)
+        dcache_class, icache_class, l2_cache_class, walk_cache_class = \
+            O3_ARM_riken_DCache, O3_ARM_riken_ICache, None, None
     elif options.cpu_type == "HPI":
         try:
             import cores.arm.HPI as core
@@ -184,14 +202,14 @@ def config_cache(options, system):
             # the names below.
             if buildEnv['TARGET_ISA'] in ['x86', 'arm', 'riscv']:
                 system.cpu[i].addPrivateSplitL1Caches(
-                        ExternalCache("cpu%d.icache" % i),
-                        ExternalCache("cpu%d.dcache" % i),
-                        ExternalCache("cpu%d.itb_walker_cache" % i),
-                        ExternalCache("cpu%d.dtb_walker_cache" % i))
+                    ExternalCache("cpu%d.icache" % i),
+                    ExternalCache("cpu%d.dcache" % i),
+                    ExternalCache("cpu%d.itb_walker_cache" % i),
+                    ExternalCache("cpu%d.dtb_walker_cache" % i))
             else:
                 system.cpu[i].addPrivateSplitL1Caches(
-                        ExternalCache("cpu%d.icache" % i),
-                        ExternalCache("cpu%d.dcache" % i))
+                    ExternalCache("cpu%d.icache" % i),
+                    ExternalCache("cpu%d.dcache" % i))
 
         system.cpu[i].createInterruptController()
         if options.l2cache:
